@@ -6,9 +6,13 @@ var APIKey = 'XZ14ldH1day6utemOleMmV1h';
 var SecretKey = 'f62e4f13a76413e1806a0e4c37d8aef7';
 
 exports.index = function(req, res) {
-	var sql1 = "select * from cruise_port where txtCruiseAreaNo='hq6' limit 0,4";
+	res.render("index");
+}
+
+exports.port = function(req, res) {
+	var sql1 = "select * from cruise_port where txtCruiseAreaNo='hq6'";
 	mysql.query(sql1, function(err, rows1) {
-		res.render("index",{
+		res.render("port",{
 			ports:rows1
 		});
 	});
