@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>智慧邮轮宝</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="stylesheet" href="css/amazeui.min.css" />
+		<script src="js/jquery.min.js"></script>
+		<script src="js/amazeui.min.js"></script>
+	</head>
+	<body class="am-with-fixed-navbar">
+		<!-- Header -->
+		<header data-am-widget="header" class="am-header am-header-default am-no-layout am-header-fixed">
+			<div class="am-header-left am-header-nav none btn_return">
+				<a href="javascript:history.go(-1);" class="am-btn am-btn-default">
+					<span class="am-header-nav-title">
+                		返回
+              		</span>
+					<i class="am-header-icon am-icon-home"></i>
+				</a>
+			</div>
+			<h1 class="am-header-title">
+    		<a href="#title-link">护照信息识别</a>
+  		</h1>
+		</header>
+		<img src="http://www.cruisesh.com:8086/img/test.jpg"  class="am-img-thumbnail">
+		<br/><br/>
+		<form class="am-form">
+		    <div class="am-form-group">
+		      	&nbsp;&nbsp;<button type="button" class="am-btn am-btn-default am-btn-xs" onclick="Distinguish()"><span class="am-icon-credit-card"></span> 护照识别</button>
+		    </div>
+    	</form>
+		<ul class="am-list">
+		  <li style="padding:5px">识别结果：<div id="result"></div></li>
+		</ul>
+		<script>
+			function Distinguish(){
+				$.ajax({
+					type: "post",
+					url: "service/BFR",
+					data: {
+						
+					},
+					success: function(data) {
+						$("#result").html(data.results.words);
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

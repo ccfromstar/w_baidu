@@ -2,8 +2,8 @@ var settings = require('../settings');
 var mysql = require('../models/db');
 var request = require("request");
 var fs = require('fs');
-var APIKey = 'XZ14ldH1day6utemOleMmV1h';
-var SecretKey = 'f62e4f13a76413e1806a0e4c37d8aef7';
+var APIKey = settings.APIKey;
+var SecretKey = settings.SecretKey;
 
 exports.index = function(req, res) {
 	res.render("index");
@@ -16,6 +16,14 @@ exports.port = function(req, res) {
 			ports:rows1
 		});
 	});
+}
+
+exports.face = function(req, res) {
+	res.render("face");
+}
+
+exports.words = function(req, res) {
+	res.render("words");
 }
 
 exports.servicedo = function(req, res) {
@@ -45,5 +53,20 @@ exports.servicedo = function(req, res) {
 				});
 		    }
 		});
+	}else if(sql == "BFR"){
+		console.log('BFR run');
+		var ak = settings.ak;
+		var sk = settings.sk;
+		var ocr = require('baidu-ocr-api').create(ak,sk);
+	
+		ocr.scan({
+			url:'http://www.cruisesh.com:8086/img/test.jpg', 
+			type:'text',
+		}).then(function (result) {
+			console.log(result);
+			res.json(result);
+		}).catch(function (err) {
+			console.log('err', err);
+		})
 	}
 }
