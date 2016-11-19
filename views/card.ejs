@@ -13,6 +13,7 @@
 		<script src="js/jquery.min.js"></script>
 		<script src="js/amazeui.min.js"></script>
 	</head>
+
 	<body class="am-with-fixed-navbar">
 		<!-- Header -->
 		<header data-am-widget="header" class="am-header am-header-default am-no-layout am-header-fixed">
@@ -25,72 +26,46 @@
 				</a>
 			</div>
 			<h1 class="am-header-title">
-    		<a href="#title-link">港口语音介绍</a>
+    		<a href="#title-link">身份证识别</a>
   		</h1>
 		</header>
-		
-		<!--港口语音介绍-->
-		<div data-am-widget="list_news" class="am-list-news am-list-news-default">
-			<div class="am-list-news-bd">
-				<ul data-am-widget="gallery" class="am-gallery am-avg-sm-2
-  am-avg-md-3 am-avg-lg-4 am-gallery-default" >
-					<%for(var i in ports){
-						var imglist = ports[i].rtfPortImg;
-						var imgsrc = '';
-						if(imglist != 'NULL'){
-							var arr1 = imglist.split('@');
-							imgsrc = arr1[0];
-						}
-						if(imgsrc !=''){
-					%>
-						<li>
-							<div class="am-gallery-item">
-								<a href="#" class="">
-									<img src="http://www.youlunshidai.com/databaseimages/<%=imgsrc%>.jpg" />
-									<h3 class="am-gallery-title"><%=ports[i].txtPortCityName%></h3>
-									<div class="am-gallery-desc">
-										<button type="button" class="am-btn am-btn-primary am-btn-xs" onclick="speak(<%=ports[i].id%>)"><span class="am-icon-volume-up"></span> 播放</button>
-										<button type="button" class="am-btn am-btn-default am-btn-xs" onclick="stop()"><span class="am-icon-volume-off"></span> 关闭</button>
-									</div>
-								</a>
-							</div>
-						</li>
-					<%}
-					}%>
-				</ul>
+		<img src="http://www.cruisesh.com:8086/img/card.jpg" class="am-img-thumbnail">
+		<br/><br/>
+		<form class="am-form">
+			<div class="am-form-group">
+				&nbsp;&nbsp;<button type="button" class="am-btn am-btn-default am-btn-xs" onclick="Distinguish()"><span class="am-icon-credit-card"></span> 身份证识别</button>
 			</div>
-		</div>
-		
+		</form>
+		<ul class="am-list">
+			<li style="padding:5px">识别结果：
+				<div id="result"></div>
+			</li>
+		</ul>
 		<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="my-modal-loading">
 			<div class="am-modal-dialog">
-				<div class="am-modal-hd">正在加载语音...</div>
+				<div class="am-modal-hd">正在识别...</div>
 				<div class="am-modal-bd">
 					<span class="am-icon-spinner am-icon-spin"></span>
 				</div>
 			</div>
 		</div>
-
-		<audio id="audio1" autoplay src=""></audio>
 		<script>
-			function speak(id){
+			function Distinguish() {
 				var $modal = $('#my-modal-loading');
 				$modal.modal();
 				$.ajax({
 					type: "post",
-					url: "service/TTS",
+					url: "service/BFRcard",
 					data: {
-						id:id
+
 					},
 					success: function(data) {
-						$('#audio1').attr('src',data);
+						$("#result").html(data.results.words);
 						$modal.modal('close');
 					}
 				});
 			}
-			
-			function stop(){
-				$('#audio1').attr('src','');
-			}
 		</script>
 	</body>
+
 </html>

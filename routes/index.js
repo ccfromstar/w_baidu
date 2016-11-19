@@ -26,6 +26,10 @@ exports.words = function(req, res) {
 	res.render("words");
 }
 
+exports.card = function(req, res) {
+	res.render("card");
+}
+
 exports.servicedo = function(req, res) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	var sql = req.params.sql;
@@ -61,6 +65,21 @@ exports.servicedo = function(req, res) {
 	
 		ocr.scan({
 			url:'http://www.cruisesh.com:8086/img/test.jpg', 
+			type:'text',
+		}).then(function (result) {
+			console.log(result);
+			res.json(result);
+		}).catch(function (err) {
+			console.log('err', err);
+		})
+	}else if(sql == "BFRcard"){
+		console.log('BFRcard run');
+		var ak = settings.ak;
+		var sk = settings.sk;
+		var ocr = require('baidu-ocr-api').create(ak,sk);
+	
+		ocr.scan({
+			url:'http://www.cruisesh.com:8086/img/card.jpg', 
 			type:'text',
 		}).then(function (result) {
 			console.log(result);
