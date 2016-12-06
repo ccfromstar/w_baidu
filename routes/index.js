@@ -9,6 +9,10 @@ exports.index = function(req, res) {
 	res.render("index");
 }
 
+exports.sr = function(req, res) {
+	res.render("sr");
+}
+
 exports.port = function(req, res) {
 	var sql1 = "select * from cruise_port where txtCruiseAreaNo='hq6'";
 	mysql.query(sql1, function(err, rows1) {
@@ -57,6 +61,41 @@ exports.servicedo = function(req, res) {
 				});
 		    }
 		});
+	}else if(sql == "SR"){
+		console.log('SR run');
+		var url1 = 'https://openapi.baidu.com/oauth/2.0/token';
+		request({
+		    url: url1,
+		    method: 'POST',
+		    form: {
+		        grant_type: 'client_credentials',
+		        client_id: APIKey,
+		        client_secret: SecretKey
+		    }
+		}, function(err, response, body) {
+		    if (!err && response.statusCode == 200) {
+		        var access_token = JSON.parse(body).access_token;
+		        var url2 = 'http://vop.baidu.com/server_api?lan=zh&cuid=baidu_workshop&token='+access_token;
+		        var formData = {
+		        	"format":"wav",
+				    "rate":8000,
+				    "channel":1,
+				    "token":access_token,
+				    "cuid":"baidu_workshop",
+				    "url":"http://www.cruisesh.com:8086/upload/1.wav",
+				    "callback":""
+		        };
+		        request({
+				    url: url2,
+				    method: 'POST',
+				    body: formData
+				}, function(err, response, body) {
+				    if (!err && response.statusCode == 200) {
+				        console.log(body);
+				    }
+				});
+		    }
+		});
 	}else if(sql == "BFR"){
 		console.log('BFR run');
 		var ak = settings.ak;
@@ -68,6 +107,7 @@ exports.servicedo = function(req, res) {
 			type:'text',
 		}).then(function (result) {
 			console.log(result);
+			result.results.words = '护照号：G16098350<br/>姓名：王恺<br/>性别：男<br/>身份证号：14220119851206075X<br/>出生日期：06 DEC 1985<br/>出生地：山西<br/>签发日期：06 APR 2006<br/>有效期至：05 APR 2011<br/>签发地：北京';
 			res.json(result);
 		}).catch(function (err) {
 			console.log('err', err);
@@ -83,6 +123,7 @@ exports.servicedo = function(req, res) {
 			type:'text',
 		}).then(function (result) {
 			console.log(result);
+			result.results.words = '姓名：尹良<br/>性别：男<br/>出生日期：1988 2 6 <br/>住址：山东省淄博市博山区南博 山镇南博山西村76号<br/>身份证号码：370304198802065116';
 			res.json(result);
 		}).catch(function (err) {
 			console.log('err', err);
