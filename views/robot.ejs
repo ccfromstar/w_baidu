@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>API接口演示</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="stylesheet" href="css/amazeui.min.css" />
+		<script src="js/jquery.min.js"></script>
+		<script src="js/amazeui.min.js"></script>
+		<style>
+			#result {
+				margin-top:10px;
+			}
+		</style>
+	</head>
+
+	<body class="am-with-fixed-navbar">
+		<!-- Header -->
+		<header data-am-widget="header" class="am-header am-header-default am-no-layout am-header-fixed">
+			<div class="am-header-left am-header-nav none btn_return">
+				<a href="javascript:history.go(-1);" class="am-btn am-btn-default">
+					<span class="am-header-nav-title">
+                		返回
+              		</span>
+					<i class="am-header-icon am-icon-home"></i>
+				</a>
+			</div>
+			<h1 class="am-header-title">
+    		<a href="#title-link">聊天机器人</a>
+  		</h1>
+		</header>
+		<br/>
+		<div class="am-g">
+		  <div class="am-u-lg-12">
+		    <div class="am-input-group">
+		      <input type="text" id="info" class="am-form-field">
+		      <span class="am-input-group-btn">
+		        <button class="am-btn am-btn-primary" type="button" onclick="Distinguish()">发送</button>
+		      </span>
+		    </div>
+		    <div id="result"></div>
+		  </div>
+		</div>
+		<script>
+			function Distinguish() {
+				var $modal = $('#my-modal-loading');
+				$modal.modal();
+				$.ajax({
+					type: "post",
+					url: "service/turing",
+					data: {
+						info:encodeURI($("#info").val())
+					},
+					success: function(data) {
+						data = JSON.parse(data);
+						$("#result").html(data.text);
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

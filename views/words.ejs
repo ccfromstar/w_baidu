@@ -12,8 +12,26 @@
 		<link rel="stylesheet" href="css/amazeui.min.css" />
 		<script src="js/jquery.min.js"></script>
 		<script src="js/amazeui.min.js"></script>
+		<style type="text/css">
+		 .none {
+		 	display:none;
+		 }
+		 .am-alert {
+		 	position: fixed;
+			top:0;
+			margin-top:0;
+			width:100%;
+			z-index:9999;
+		 }
+		 #buyfile_div,#buyfile_div1,#supplyfile_div{
+		 	margin-top:10px;
+		 	width:100%;
+		 }
+		 #buyfile_div>img,#buyfile_div1>img,#supplyfile_div>img{
+		 	width:50%;
+		 }
+		</style>
 	</head>
-
 	<body class="am-with-fixed-navbar">
 		<!-- Header -->
 		<header data-am-widget="header" class="am-header am-header-default am-no-layout am-header-fixed">
@@ -26,46 +44,303 @@
 				</a>
 			</div>
 			<h1 class="am-header-title">
-    		<a href="#title-link">护照信息识别</a>
+    		<a href="#title-link">游客数据采集</a>
   		</h1>
 		</header>
-		<img src="http://www.cruisesh.com:8086/img/test.jpg" class="am-img-thumbnail">
-		<br/><br/>
-		<form class="am-form">
-			<div class="am-form-group">
-				&nbsp;&nbsp;<button type="button" class="am-btn am-btn-default am-btn-xs" onclick="Distinguish()"><span class="am-icon-credit-card"></span> 护照识别</button>
-			</div>
-		</form>
-		<ul class="am-list">
-			<li style="padding:5px">识别结果：
-				<div id="result"></div>
-			</li>
-		</ul>
-		<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="my-modal-loading">
-			<div class="am-modal-dialog">
-				<div class="am-modal-hd">正在识别...</div>
-				<div class="am-modal-bd">
-					<span class="am-icon-spinner am-icon-spin"></span>
+		
+  			<fieldset>
+    			<legend>身份证照片</legend>
+    			<div class="am-radio">
+			      <label>
+			        <input type="radio" name="side" value="face" checked>
+			        正面
+			      </label>
+			    </div>
+
+			    <div class="am-radio">
+			      <label>
+			        <input type="radio" name="side" value="back">
+			        背面
+			      </label>
+			    </div>
+								<form id="buyformFile" name="formFile1" method="post" target="frameFilebuy" encType="multipart/form-data">
+				              		<div class="am-form-file">
+									  <button type="button" class="am-btn am-btn-default am-btn-sm">
+									    <i class="am-icon-cloud-upload"></i> 身份证照片
+									  </button>
+									  <input type="file" accept="image/*" id="fileUpbuy" onChange="UploadBuy()" name="fileUpbuy" />
+									</div>                                    
+									<div id="buyfile_div"></div>
+									<div id="buyfile_div1"></div>
+				              	</form>
+				              	<iframe id="frameFile" name="frameFilebuy" style="display:none"></iframe>
+				              	<input type="hidden" id="buyfile" />
+			</fieldset>
+
+			<fieldset>
+    			<legend>护照照片</legend>
+								<form id="supplyformFile" name="formFile" method="post" target="frameFile" encType="multipart/form-data">
+				              		<div class="am-form-file">
+									  <button type="button" class="am-btn am-btn-default am-btn-sm">
+									    <i class="am-icon-cloud-upload"></i> 护照照片
+									  </button>
+									  <input type="file" accept="image/*" id="fileUp" onChange="UploadSupplyer()" name="fileUp" />
+									</div>                                    
+									<div id="supplyfile_div"></div>
+				              	</form>
+				              	<iframe id="frameFile" name="frameFile" style="display:none"></iframe>
+				              	<input type="hidden" id="supplyfile" />
+			</fieldset>
+
+			<form class="am-form">
+			  <fieldset>
+			    <legend>信息确认</legend>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">姓名</label>
+			      <input type="text" class="" id="item1" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(1)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">性别</label>
+			      <input type="text" class="" id="item2" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(2)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">名族</label>
+			      <input type="text" class="" id="item3" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(3)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">出生</label>
+			      <input type="text" class="" id="item4" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(4)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">住址</label>
+			      <input type="text" class="" id="item5" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(5)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">身份证号</label>
+			      <input type="text" class="" id="item6" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(6)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">身份证签发机关</label>
+			      <input type="text" class="" id="item7" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(7)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">身份证有效期起始时间</label>
+			      <input type="text" class="" id="item8" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(8)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">身份证有效期结束时间</label>
+			      <input type="text" class="" id="item9" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(9)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">护照号</label>
+			      <input type="text" class="" id="item10" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(10)" >确认</button>
+			    </div>
+
+			    <div class="am-form-group">
+			      <label for="doc-ipt-email-1">护照有效期</label>
+			      <input type="text" class="" id="item11" >
+			      <button type="button" class="am-btn am-btn-success" onclick="Sure(11)" >确认</button>
+			    </div>
+
+			    <p><button type="text" id="btn_sub" class="am-btn am-btn-default" onclick="alert('信息提交成功!');" disabled="disabled">提交信息</button></p>
+			  </fieldset>
+			</form> 
+
+
+				<div class="am-alert am-alert-danger none errorinfo" data-am-alert></div>
+				<div class="am-alert am-alert-success none successinfo" data-am-alert></div>
+				<div class="am-alert am-alert-warning none loadinfo" data-am-alert></div>
+
+				<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="my-modal-loading">
+					<div class="am-modal-dialog">
+						<div class="am-modal-hd">正在识别...</div>
+						<div class="am-modal-bd">
+							<span class="am-icon-spinner am-icon-spin"></span>
+						</div>
+					</div>
 				</div>
-			</div>
-		</div>
 		<script>
-			function Distinguish() {
-				var $modal = $('#my-modal-loading');
-				$modal.modal();
+			var hosts = "http://www.cruisesh.com:8086";
+
+			var img1 = "",img2 = "";
+
+			window.addEventListener('message',function(e){
+				var arr1 = (e.data).split("@");
+				var fname=arr1[1];
+				if(arr1[0] == "supply"){
+					/*护照信息*/
+		          	$('#supplyfile').val(fname);
+			       	$(".loadinfo").addClass("none");
+			       	$(".successinfo").html("<p>文件上传成功</p>").removeClass("none");
+			       	setTimeout(function() { $(".successinfo").addClass("none");}, 2000);
+			       	$("#supplyfile_div").html('<img src="'+hosts+'/upload/'+fname+'" />');
+			       	img2 = hosts+'/upload/'+fname;
+			       	var $modal = $('#my-modal-loading');
+					$modal.modal();
+					setTimeout(function() {
+							$.ajax({
+								type: "post",
+								url: "service/BFR",
+								data: {
+									img2:img2
+								},
+								success: function(data) {
+									data = strToJson(data);
+									
+									var dataValue = strToJson(data.outputs[0].outputValue.dataValue);
+									$('#item10').val(dataValue.ret.passport_no);
+									$('#item11').val(dataValue.ret.expiry_day);
+									$modal.modal('close');
+								}
+							});
+						}, 3000);
+				}else if(arr1[0] == "buy"){
+					/*身份证信息*/
+					$('#buyfile').val(fname);
+			       	$(".loadinfo").addClass("none");
+			       	$(".successinfo").html("<p>文件上传成功</p>").removeClass("none");
+			       	setTimeout(function() { $(".successinfo").addClass("none");}, 2000);
+			       	var side = jqradio("side");
+			       	if(side == "face"){
+			       		$("#buyfile_div").html('<img src="'+hosts+'/upload/'+fname+'" />');
+			       	}else{
+			       		$("#buyfile_div1").html('<img src="'+hosts+'/upload/'+fname+'" />');
+			       	}
+			       	img1 = hosts+'/upload/'+fname;
+			       	var $modal = $('#my-modal-loading');
+					$modal.modal();
+					
+					if(side == "face"){
+						setTimeout(function() {
+							$.ajax({
+								type: "post",
+								url: "service/BFRcard",
+								data: {
+									img1:img1
+								},
+								success: function(data) {
+									data = strToJson(data);
+									
+									var dataValue = strToJson(data.outputs[0].outputValue.dataValue);
+
+									$('#item1').val(dataValue.name);
+									$('#item2').val(dataValue.sex);
+									$('#item3').val(dataValue.nationality);
+									$('#item4').val(dataValue.birth);
+									$('#item5').val(dataValue.address);
+									$('#item6').val(dataValue.num);
+									$modal.modal('close');
+								}
+							});
+						}, 3000);
+					}else{
+						setTimeout(function() {
+							$.ajax({
+								type: "post",
+								url: "service/BFRcardback",
+								data: {
+									img1:img1
+								},
+								success: function(data) {
+									data = strToJson(data);
+									
+									var dataValue = strToJson(data.outputs[0].outputValue.dataValue);
+
+									$('#item7').val(dataValue.issue);
+									$('#item8').val(dataValue.start_date);
+									$('#item9').val(dataValue.end_date);
+									$modal.modal('close');
+								}
+							});
+						}, 3000);
+					}
+				}
+		    },false);
+
+		    function Sure(i){
+		    	$('#item'+i).attr('disabled','disabled');
+		    	var Flag = true;
+		    	for(var i=1;i<12;i++){
+		    		if($('#item'+i).attr('disabled') != 'disabled'){
+		    			Flag = false;
+		    		}
+		    	}
+		    	if(Flag){
+		    		$('#btn_sub').removeAttr('disabled');
+		    	}
+		    }
+
+			function Distinguish(){
+				$('.loadinfo').html('<p>正在进行人脸比对...</p>').removeClass("none");
 				$.ajax({
 					type: "post",
-					url: "service/BFR",
+					url: "service/face_verify",
 					data: {
-
+						img1:img1,
+						img2:img2
 					},
 					success: function(data) {
-						$("#result").html(data.results.words);
-						$modal.modal('close');
+						data = strToJson(data);
+						$("#zxd").html(data.confidence);
+						$("#zxd1").html(data.thresholds[0]);
+						$("#zxd2").html(data.thresholds[1]);
+						$("#zxd3").html(data.thresholds[2]);
+						if(data.confidence > data.thresholds[0]){
+							$("#zxd4").html("是同一人");
+						}else{
+							$("#zxd4").html("不是同一人");
+						}
+						$(".loadinfo").addClass("none");
+						$(".successinfo").html("<p>人脸对比结束</p>").removeClass("none");
+						setTimeout(function() { $(".successinfo").addClass("none");}, 2000);
 					}
 				});
 			}
+
+			function jqradio(name){
+			    return $(':checked[name="' + name + '"]').val();
+			}
+
+			function strToJson(str){ 
+				var json = eval('(' + str + ')'); 
+				return json; 
+			} 
+
+			function UploadBuy(){
+				var path = document.all.fileUpbuy.value;
+				if(!path){return false;}
+				$('.loadinfo').html('<p>文件上传中...</p>').removeClass("none");
+				$('#buyformFile').attr('action',hosts + "/service/uploadbuydo");
+		        $('#buyformFile').submit();
+			}
+
+			function UploadSupplyer(){
+				var path = document.all.fileUp.value;
+				if(!path){return false;}
+				$('.loadinfo').html('<p>文件上传中...</p>').removeClass("none");
+				$('#supplyformFile').attr('action',hosts + "/service/uploaddo");
+		        $('#supplyformFile').submit();
+			}
 		</script>
 	</body>
-
 </html>

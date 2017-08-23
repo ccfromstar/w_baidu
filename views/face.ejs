@@ -12,6 +12,25 @@
 		<link rel="stylesheet" href="css/amazeui.min.css" />
 		<script src="js/jquery.min.js"></script>
 		<script src="js/amazeui.min.js"></script>
+		<style type="text/css">
+		 .none {
+		 	display:none;
+		 }
+		 .am-alert {
+		 	position: fixed;
+			top:0;
+			margin-top:0;
+			width:100%;
+			z-index:9999;
+		 }
+		 #buyfile_div,#supplyfile_div{
+		 	margin-top:10px;
+		 	width:100%;
+		 }
+		 #buyfile_div>img,#supplyfile_div>img{
+		 	width:50%;
+		 }
+		</style>
 	</head>
 	<body class="am-with-fixed-navbar">
 		<!-- Header -->
@@ -28,19 +47,122 @@
     		<a href="#title-link">人脸识别</a>
   		</h1>
 		</header>
-		<button type="button" class="am-btn am-btn-default am-btn-xs" onclick="Distinguish()">识别</button>
+		
+  			<fieldset>
+    			<legend>身份证照片</legend>
+								<form id="buyformFile" name="formFile1" method="post" target="frameFilebuy" encType="multipart/form-data">
+				              		<div class="am-form-file">
+									  <button type="button" class="am-btn am-btn-default am-btn-sm">
+									    <i class="am-icon-cloud-upload"></i> 身份证照片
+									  </button>
+									  <input type="file" accept="image/*" id="fileUpbuy" onChange="UploadBuy()" name="fileUpbuy" />
+									</div>                                    
+									<div id="buyfile_div"></div>
+				              	</form>
+				              	<iframe id="frameFile" name="frameFilebuy" style="display:none"></iframe>
+				              	<input type="hidden" id="buyfile" />
+			</fieldset>
+
+			<fieldset>
+    			<legend>本人照片</legend>
+								<form id="supplyformFile" name="formFile" method="post" target="frameFile" encType="multipart/form-data">
+				              		<div class="am-form-file">
+									  <button type="button" class="am-btn am-btn-default am-btn-sm">
+									    <i class="am-icon-cloud-upload"></i> 本人照片
+									  </button>
+									  <input type="file" accept="image/*" id="fileUp" onChange="UploadSupplyer()" name="fileUp" />
+									</div>                                    
+									<div id="supplyfile_div"></div>
+				              	</form>
+				              	<iframe id="frameFile" name="frameFile" style="display:none"></iframe>
+				              	<input type="hidden" id="supplyfile" />
+			</fieldset>
+
+			<fieldset>
+				<button type="button" class="am-btn am-btn-default" onclick="Distinguish()">人脸比对</button>
+			</fieldset>
+			<fieldset>
+				<label >比对结果:</label>
+				<label >置信度(0-100):<span id="zxd"></span></label>
+				<label >误识率在10e-3时对应的置信度分类阈值:<span id="zxd1"></span></label>
+				<label >误识率在10e-4时对应的置信度分类阈值:<span id="zxd2"></span></label>
+				<label >误识率在10e-5时对应的置信度分类阈值:<span id="zxd3"></span></label>
+				<label ><span id="zxd4"></span></label>
+			</fieldset>
+				<div class="am-alert am-alert-danger none errorinfo" data-am-alert></div>
+				<div class="am-alert am-alert-success none successinfo" data-am-alert></div>
+				<div class="am-alert am-alert-warning none loadinfo" data-am-alert></div>
 		<script>
+			var hosts = "http://www.cruisesh.com:8086";
+
+			var img1 = "",img2 = "";
+
+			window.addEventListener('message',function(e){
+				var arr1 = (e.data).split("@");
+				var fname=arr1[1];
+				if(arr1[0] == "supply"){
+		          	$('#supplyfile').val(fname);
+			       	$(".loadinfo").addClass("none");
+			       	$(".successinfo").html("<p>文件上传成功</p>").removeClass("none");
+			       	setTimeout(function() { $(".successinfo").addClass("none");}, 2000);
+			       	$("#supplyfile_div").html('<img src="'+hosts+'/upload/'+fname+'" />');
+			       	img2 = hosts+'/upload/'+fname;
+				}else if(arr1[0] == "buy"){
+					$('#buyfile').val(fname);
+			       	$(".loadinfo").addClass("none");
+			       	$(".successinfo").html("<p>文件上传成功</p>").removeClass("none");
+			       	setTimeout(function() { $(".successinfo").addClass("none");}, 2000);
+			       	$("#buyfile_div").html('<img src="'+hosts+'/upload/'+fname+'" />');
+			       	img1 = hosts+'/upload/'+fname;
+				}
+		    },false);
+
 			function Distinguish(){
+				$('.loadinfo').html('<p>正在进行人脸比对...</p>').removeClass("none");
 				$.ajax({
 					type: "post",
-					url: "service/BFR",
+					url: "service/face_verify",
 					data: {
-						
+						img1:img1,
+						img2:img2
 					},
 					success: function(data) {
-						console.log(data);
+						data = strToJson(data);
+						$("#zxd").html(data.confidence);
+						$("#zxd1").html(data.thresholds[0]);
+						$("#zxd2").html(data.thresholds[1]);
+						$("#zxd3").html(data.thresholds[2]);
+						if(data.confidence > data.thresholds[0]){
+							$("#zxd4").html("是同一人");
+						}else{
+							$("#zxd4").html("不是同一人");
+						}
+						$(".loadinfo").addClass("none");
+						$(".successinfo").html("<p>人脸对比结束</p>").removeClass("none");
+						setTimeout(function() { $(".successinfo").addClass("none");}, 2000);
 					}
 				});
+			}
+
+			function strToJson(str){ 
+				var json = eval('(' + str + ')'); 
+				return json; 
+			} 
+
+			function UploadBuy(){
+				var path = document.all.fileUpbuy.value;
+				if(!path){return false;}
+				$('.loadinfo').html('<p>文件上传中...</p>').removeClass("none");
+				$('#buyformFile').attr('action',hosts + "/service/uploadbuydo");
+		        $('#buyformFile').submit();
+			}
+
+			function UploadSupplyer(){
+				var path = document.all.fileUp.value;
+				if(!path){return false;}
+				$('.loadinfo').html('<p>文件上传中...</p>').removeClass("none");
+				$('#supplyformFile').attr('action',hosts + "/service/uploaddo");
+		        $('#supplyformFile').submit();
 			}
 		</script>
 	</body>
