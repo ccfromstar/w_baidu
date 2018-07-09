@@ -57,10 +57,10 @@
 					type: "post",
 					url: "service/BFRleader",
 					data: {
-
+						
 					},
 					success: function(data) {
-						$("#result").html(data.results.words);
+						$("#result").html(data);
 						$modal.modal('close');
 					}
 				});

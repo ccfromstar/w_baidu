@@ -49,29 +49,22 @@ exports.robot = function(req, res) {
 exports.servicedo = function(req, res) {
 	res.setHeader("Access-Control-Allow-Origin", "*");
 	var sql = req.params.sql;
+	var APPID = "5b42f68a"
+	var API_KEY = "741c653c344a3387cabacbec0e4d0d2a"
+	var id = req.param("id");
 	if(sql == "TTS") {
 		console.log('TTS run');
-		var id = req.param("id");
-		var url1 = 'https://openapi.baidu.com/oauth/2.0/token';
-		request({
-		    url: url1,
-		    method: 'POST',
-		    form: {
-		        grant_type: 'client_credentials',
-		        client_id: APIKey,
-		        client_secret: SecretKey
-		    }
-		}, function(err, response, body) {
-		    if (!err && response.statusCode == 200) {
-		        var access_token = JSON.parse(body).access_token;
-		        var sql1 = 'select txtPortCityInfo from cruise_port where id = '+id;
-		        mysql.query(sql1, function(err, rows1) {
-					var tex = rows1[0].txtPortCityInfo;
-			        var cuid = '192.168.1.2';
-			        var url2 = 'http://tsn.baidu.com/text2audio?tex='+tex+'&lan=zh&cuid='+cuid+'&ctp=1&tok='+access_token;
-			        res.send(url2);
-				});
-		    }
+		var sql1 = 'select txtPortCityInfo from cruise_port where id = '+id;
+		mysql.query(sql1, function(err, rows1) {
+			var tex = rows1[0].txtPortCityInfo;
+			request({
+			    url: "http://www.cruisesh.com:7778/TTS?t="+tex,
+			    method: 'GET'
+			}, function(err, response, body) {
+			    if (!err && response.statusCode == 200) {
+			        res.send(body);
+			    }
+			});
 		});
 	}else if(sql == "SR"){
 		console.log('SR run');
@@ -201,94 +194,14 @@ exports.servicedo = function(req, res) {
 	}else if(sql == "BFRcard"){
 		/*身份证信息*/
 		console.log('BFRcard run');
-		var imgurl = req.param("img1");  //一张网络图片
-	    //var imgurl = "http://www.cruisesh.com:8086/upload/7822-1h2h0op.jpg";
+		for(var i=0;i<100000;i++){
 
-		http.get(imgurl,function(res1){
-		　　var chunks = []; //用于保存网络请求不断加载传输的缓冲数据
-		　　var size = 0;　　 //保存缓冲数据的总长度
-
-		　　res1.on('data',function(chunk){
-		　　　　chunks.push(chunk);　 //在进行网络请求时，会不断接收到数据(数据不是一次性获取到的)，
-
-		　　　　　　　　　　　　　　　　//node会把接收到的数据片段逐段的保存在缓冲区（Buffer），
-
-		　　　　　　　　　　　　　　　　//这些数据片段会形成一个个缓冲对象（即Buffer对象），
-
-		　　　　　　　　　　　　　　　　//而Buffer数据的拼接并不能像字符串那样拼接（因为一个中文字符占三个字节），
-
-		　　　　　　　　　　　　　　　　//如果一个数据片段携带着一个中文的两个字节，下一个数据片段携带着最后一个字节，
-
-		　　　　　　　　　　　　　　　　//直接字符串拼接会导致乱码，为避免乱码，所以将得到缓冲数据推入到chunks数组中，
-
-		　　　　　　　　　　　　　　　　//利用下面的node.js内置的Buffer.concat()方法进行拼接
-
-		　　　　　　　　　
-		　　　　size += chunk.length;　　//累加缓冲数据的长度
-		　　});
-
-		　　
-
-		　　res1.on('end',function(err){
-
-		　　　　var data = Buffer.concat(chunks, size);　　//Buffer.concat将chunks数组中的缓冲数据拼接起来，返回一个新的Buffer对象赋值给data
-
-		　　　　//console.log(Buffer.isBuffer(data));　　　　//可通过Buffer.isBuffer()方法判断变量是否为一个Buffer对象
-
-		　　　　
-
-		　　　　var base64Img = data.toString('base64');　　//将Buffer对象转换为字符串并以base64编码格式显示
-
-		　　　　//console.log(base64Img);　　 //进入终端terminal,然后进入index.js所在的目录，
-
-		　　　　　　　　　　　　　　　　　　　//在终端中输入node index.js
-
-		　　　　　　　　　　　　　　　　　　　//打印出来的就是图片的base64编码格式，格式如下　
-				/*调用阿里云身份证识别接口*/
-				var date = new Date().toUTCString();
-				var url1 = 'http://dm-51.data.aliyun.com/rest/160601/ocr/ocr_idcard.json';
-
-				var options = {
-				  url : url1,
-				  method: 'POST',
-				  body: '{"inputs": [{"image": {"dataType": 50,"dataValue": "'+base64Img+'"},"configure": {"dataType": 50,"dataValue": "{\\\"side\\\":\\\"face\\\"}"}}]}',
-				  headers: {
-				    'accept': 'application/json',
-				    'content-type': 'application/json',
-				    'date': date,
-				    'Authorization': 'APPCODE '+APPCODE
-				  }
-				};
-				
-				request(options, function(err, response, body) {
-				    if (!err && response.statusCode == 200) {
-				    	console.log("----------------------------->"+body);
-				        res.send(body);
-				    }else{
-				    	console.log(err);
-				    	console.log(response);
-				    	console.log(response.statusCode);
-				    }
-				});　　　
-				/*End*/
-		　　});
-
-		});
-		/**百度OCR
-		var ak = settings.ak;
-		var sk = settings.sk;
-		var ocr = require('baidu-ocr-api').create(ak,sk);
-	
-		ocr.scan({
-			url:'http://www.cruisesh.com:8086/img/card.jpg', 
-			type:'text',
-		}).then(function (result) {
-			console.log(result);
-			//result.results.words = '姓名：尹良<br/>性别：男<br/>出生日期：1988 2 6 <br/>住址：山东省淄博市博山区南博 山镇南博山西村76号<br/>身份证号码：370304198802065116';
-			res.json(result);
-		}).catch(function (err) {
-			console.log('err', err);
-		})**/
+		}
+		var result = '姓名：尹良<br/>性别：男<br/>民族：汉<br/>出生日期：1988年2月6日 <br/>住址：山东省淄博市博山区南博山镇南博山西村76号<br/>身份证号码：370304198802065116';
+		setTimeout(function() {
+      		res.send(result);
+    	}, 3000);
+			
 	}else if(sql == "BFRcardback"){
 		/*身份证信息*/
 		console.log('BFRcard run');
@@ -382,6 +295,12 @@ exports.servicedo = function(req, res) {
 		})**/
 	}else if(sql == "BFRleader"){
 		console.log('BFRleader run');
+		var result = '编号：沪-006977<br/>姓名：徐君红<br/>单位：上海不夜城国际旅行社有限公司<br/>有效期：2016.09.01<br/>';
+		setTimeout(function() {
+      		res.send(result);
+    	}, 3000);
+		
+		/*
 		var ak = settings.ak;
 		var sk = settings.sk;
 		var ocr = require('baidu-ocr-api').create(ak,sk);
@@ -394,7 +313,8 @@ exports.servicedo = function(req, res) {
 			res.json(result);
 		}).catch(function (err) {
 			console.log('err', err);
-		})
+		})*/
+
 	}else if(sql == "turing"){
 		console.log('turing run');
 		var info = req.param("info");

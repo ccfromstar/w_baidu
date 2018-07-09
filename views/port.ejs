@@ -82,7 +82,8 @@
 						id:id
 					},
 					success: function(data) {
-						$('#audio1').attr('src',data);
+						console.log("http://www.cruisesh.com/audio/"+data+".wav");
+						$('#audio1').attr('src',"http://www.cruisesh.com/audio/"+data+".wav");
 						$modal.modal('close');
 					}
 				});
